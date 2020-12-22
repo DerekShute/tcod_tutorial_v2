@@ -6,6 +6,14 @@ from components.inventory import Inventory
 from components.level import Level
 from entity import Actor, Item
 
+ARMOR_CHAR = '['
+ARMOR_COLOR = (139, 69, 19)  # brown
+POTION_CHAR = '!'
+SCROLL_CHAR = '~'
+WEAPON_CHAR = '/'
+WEAPON_COLOR = (0, 191, 255)  # Light blue
+
+# ===== ACTORS =====
 
 player = Actor(
     char="@",
@@ -39,44 +47,54 @@ troll = Actor(
     level=Level(xp_given=100),
 )
 
+# ===== CONSUMABLES
+
 confusion_scroll = Item(
-    char="~",
+    char=SCROLL_CHAR,
     color=(207, 63, 255),
     name="Confusion Scroll",
     consumable=consumable.ConfusionConsumable(number_of_turns=10),
 )
+
 fireball_scroll = Item(
-    char="~",
+    char=SCROLL_CHAR,
     color=(255, 0, 0),
     name="Fireball Scroll",
     consumable=consumable.FireballDamageConsumable(damage=12, radius=3),
 )
+
 health_potion = Item(
-    char="!",
+    char=POTION_CHAR,
     color=(127, 0, 255),
     name="Health Potion",
     consumable=consumable.HealingConsumable(amount=4),
 )
+
 lightning_scroll = Item(
-    char="~",
+    char=SCROLL_CHAR,
     color=(255, 255, 0),
     name="Lightning Scroll",
     consumable=consumable.LightningDamageConsumable(damage=20, maximum_range=5),
 )
 
-dagger = Item(
-    char="/", color=(0, 191, 255), name="Dagger", equippable=equippable.Dagger()
-)
 
-sword = Item(char="/", color=(0, 191, 255), name="Sword", equippable=equippable.Sword())
+# ===== WEAPONS
 
-leather_armor = Item(
-    char="[",
-    color=(139, 69, 19),
-    name="Leather Armor",
-    equippable=equippable.LeatherArmor(),
-)
+def make_weapon(name:str, **kwargs):
+    return Item(char=WEAPON_CHAR, color=WEAPON_COLOR, name=name, equippable=equippable.Weapon(**kwargs))
 
-chain_mail = Item(
-    char="[", color=(139, 69, 19), name="Chain Mail", equippable=equippable.ChainMail()
-)
+dagger = make_weapon("Dagger", power_bonus=2)
+
+sword = make_weapon("Sword", power_bonus=4)
+
+
+# ===== ARMOR
+
+def make_armor(name:str, **kwargs):
+    return Item(char=ARMOR_CHAR, color=ARMOR_COLOR, name=name, equippable=equippable.Armor(**kwargs))
+
+leather_armor = make_armor("Leather Armor", defense_bonus=1)
+
+chain_mail = make_armor("Chain Mail", defense_bonus=3)
+
+plate_mail = make_armor("Plate Mail", defense_bonus=5)

@@ -24,21 +24,13 @@ class Equippable(BaseComponent):
         self.defense_bonus = defense_bonus
 
 
-class Dagger(Equippable):
-    def __init__(self) -> None:
-        super().__init__(equipment_type=EquipmentType.WEAPON, power_bonus=2)
+# ===== SUBCLASSES
+
+class Weapon(Equippable):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(equipment_type=EquipmentType.WEAPON, *args, **kwargs)
 
 
-class Sword(Equippable):
-    def __init__(self) -> None:
-        super().__init__(equipment_type=EquipmentType.WEAPON, power_bonus=4)
-
-
-class LeatherArmor(Equippable):
-    def __init__(self) -> None:
-        super().__init__(equipment_type=EquipmentType.ARMOR, defense_bonus=1)
-
-
-class ChainMail(Equippable):
-    def __init__(self) -> None:
-        super().__init__(equipment_type=EquipmentType.ARMOR, defense_bonus=3)
+class Armor(Equippable):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(equipment_type=EquipmentType.ARMOR, *args, **kwargs)
