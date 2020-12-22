@@ -26,11 +26,20 @@ class Equippable(BaseComponent):
 
 # ===== SUBCLASSES
 
+class Armor(Equippable):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(equipment_type=EquipmentType.ARMOR, *args, **kwargs)
+
+
+class Shield(Equippable):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(equipment_type=EquipmentType.SHIELD, *args, **kwargs)
+
+
 class Weapon(Equippable):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(equipment_type=EquipmentType.WEAPON, *args, **kwargs)
 
+# EOF
 
-class Armor(Equippable):
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(equipment_type=EquipmentType.ARMOR, *args, **kwargs)
+

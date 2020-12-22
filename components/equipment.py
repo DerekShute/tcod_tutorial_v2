@@ -12,19 +12,21 @@ if TYPE_CHECKING:
 class Equipment(BaseComponent):
     parent: Actor
 
-    def __init__(self, weapon: Optional[Item] = None, armor: Optional[Item] = None):
+    def __init__(self,
+                 weapon: Optional[Item] = None,
+                 armor: Optional[Item] = None,
+                 shield: Optional[Item] = None):
         self.weapon = weapon
         self.armor = armor
+        self.shield = shield
 
     @property
     def defense_bonus(self) -> int:
         bonus = 0
 
-        if self.weapon is not None and self.weapon.equippable is not None:
-            bonus += self.weapon.equippable.defense_bonus
-
-        if self.armor is not None and self.armor.equippable is not None:
-            bonus += self.armor.equippable.defense_bonus
+        for item in (self.weapon, self.armor, self.shield):
+            if item and item.equippable:
+                bonus += item.equippable.defense_bonus
 
         return bonus
 
@@ -32,16 +34,14 @@ class Equipment(BaseComponent):
     def power_bonus(self) -> int:
         bonus = 0
 
-        if self.weapon is not None and self.weapon.equippable is not None:
-            bonus += self.weapon.equippable.power_bonus
-
-        if self.armor is not None and self.armor.equippable is not None:
-            bonus += self.armor.equippable.power_bonus
-
+        for item in (self.weapon, self.armor, self.shield):
+            if item and item.equippable:
+                bonus += item.equippable.power_bonus
+  
         return bonus
 
     def item_is_equipped(self, item: Item) -> bool:
-        return self.weapon == item or self.armor == item
+        return self.weapon == item or self.armor == item or self.shield == item
 
     def unequip_message(self, item_name: str) -> None:
         self.parent.gamemap.engine.message_log.add_message(
@@ -73,13 +73,13 @@ class Equipment(BaseComponent):
         setattr(self, slot, None)
 
     def toggle_equip(self, equippable_item: Item, add_message: bool = True) -> None:
-        if (
-            equippable_item.equippable
-            and equippable_item.equippable.equipment_type == EquipmentType.WEAPON
-        ):
-            slot = "weapon"
-        else:
-            slot = "armor"
+        if equippable_item.equippable:
+            if equippable_item.equippable.equipment_type == EquipmentType.WEAPON:
+                slot = "weapon"
+            elif equippable_item.equippable.equipment_type == EquipmentType.ARMOR:
+                slot = "armor"
+            else:  # EquipmentType.SHIELD
+                slot = "shield"
 
         if getattr(self, slot) == equippable_item:
             self.unequip_from_slot(slot, add_message)

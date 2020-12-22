@@ -10,6 +10,8 @@ ARMOR_CHAR = '['
 ARMOR_COLOR = (139, 69, 19)  # brown
 POTION_CHAR = '!'
 SCROLL_CHAR = '~'
+SHIELD_CHAR = ')'
+SHIELD_COLOR = (0, 191, 255)  # Light blue
 WEAPON_CHAR = '/'
 WEAPON_COLOR = (0, 191, 255)  # Light blue
 
@@ -98,3 +100,13 @@ leather_armor = make_armor("Leather Armor", defense_bonus=1)
 chain_mail = make_armor("Chain Mail", defense_bonus=3)
 
 plate_mail = make_armor("Plate Mail", defense_bonus=5)
+
+
+# ===== SHIELDS
+
+def make_shield(name:str, **kwargs):
+    return Item(char=SHIELD_CHAR, color=SHIELD_COLOR, name=name, equippable=equippable.Shield(**kwargs))
+
+shield = make_shield("Shield", defense_bonus=1, power_bonus=1)
+
+# EOF
