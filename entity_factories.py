@@ -28,26 +28,40 @@ player = Actor(
     level=Level(level_up_base=200),
 )
 
-orc = Actor(
-    char="o",
-    color=(63, 127, 63),
-    name="Orc",
-    ai_cls=HostileEnemy,
-    equipment=Equipment(),
-    fighter=Fighter(hp=10, base_defense=0, base_power=3),
-    inventory=Inventory(capacity=0),
-    level=Level(xp_given=35),
-)
-troll = Actor(
-    char="T",
-    color=(0, 127, 0),
-    name="Troll",
-    ai_cls=HostileEnemy,
-    equipment=Equipment(),
-    fighter=Fighter(hp=16, base_defense=1, base_power=4),
-    inventory=Inventory(capacity=0),
-    level=Level(xp_given=100),
-)
+def make_enemy(hp:int=1, base_defense:int=0, base_power:int=0, xp_given:int=0, **kwargs):
+    return Actor(fighter=Fighter(hp=hp, base_defense=base_defense, base_power=base_power),
+                 inventory=Inventory(capacity=0),
+                 equipment=Equipment(),
+                 ai_cls=HostileEnemy,
+                 level=Level(xp_given=xp_given),
+                 **kwargs
+                 )
+
+giant = make_enemy(char='G',
+                   name='Giant',
+                   color=(0, 127, 0),
+                   hp=30,
+                   base_defense=4,
+                   base_power=8,
+                   xp_given=200)
+
+
+orc = make_enemy(char='o',
+                 name='Orc',
+                 color=(63, 127, 63),
+                 hp=10,
+                 base_power=3,
+                 xp_given=35)
+
+
+troll = make_enemy(char='T',
+                   name='Troll',
+                   color=(0, 127, 0),
+                   hp=16,
+                   base_defense=1,
+                   base_power=4,
+                   xp_given=100)
+
 
 # ===== CONSUMABLES
 
