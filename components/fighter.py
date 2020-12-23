@@ -68,8 +68,6 @@ class Fighter(BaseComponent):
 
         self.parent.message(death_message, death_message_color)
 
-        self.engine.player.level.add_xp(self.parent.level.xp_given)
-
     def heal(self, amount: int) -> int:
         if self.hp == self.max_hp:
             return 0
@@ -85,5 +83,44 @@ class Fighter(BaseComponent):
 
         return amount_recovered
 
-    def take_damage(self, amount: int) -> None:
-        self.hp -= amount
+    def take_damage(self,
+                    amount: int,
+                    msg: str,
+                    source_entity: Entity=None,
+                    ignore_defense: bool=False,
+                    msg2: str='') -> None:
+        """
+        General "gets hurt" collection point
+        
+        'msg' is assumed to be a colorful description of the damaging action
+        and possibly the instigator name.
+
+        'msg2' is more color text going after the name of this entity.
+
+        So the final output is: {msg} the {my name} {msg2} for {damage or no damage}
+
+        In the future we can have different defense levels depending upon
+        attack type.
+        """
+        if source_entity is self.engine.player:
+            col = color.player_atk
+        else:
+            col = color.enemy_atk
+
+        if msg2:
+            desc = f'{msg} the {self.parent.name} {msg2}'
+        else:
+            desc = f'{msg} the {self.parent.name}'
+            
+        defense = 0 if ignore_defense else self.defense
+        damage = max(amount - defense, 0)
+        if damage > 0:
+            desc = f'{desc} for {damage} hit points.'
+        else:
+            desc = f'{desc} but does no damage.'
+        
+        self.parent.message(desc, fg=col)
+
+        self.hp -= damage  # Could call die()
+        if self.hp == 0 and source_entity:
+            source_entity.level.add_xp(self.parent.level.xp_given)

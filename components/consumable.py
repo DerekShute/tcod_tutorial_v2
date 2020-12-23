@@ -93,11 +93,12 @@ class FireballDamageConsumable(Consumable):
 
         targets_hit = False
         for actor in self.engine.game_map.actors:
-            if actor.distance(*target_xy) <= self.radius:
-                actor.message(
-                    f"The {actor.name} is engulfed in a fiery explosion, taking {self.damage} damage!"
-                )
-                actor.fighter.take_damage(self.damage)
+            if actor.distance(*target_xy) <= self.radius:               
+                actor.fighter.take_damage(self.damage,
+                                          "A fiery explosion engulfs",
+                                          ignore_defense=True,
+                                          source_entity=action.entity
+                                          )
                 targets_hit = True
 
         if not targets_hit:
@@ -142,10 +143,14 @@ class LightningDamageConsumable(Consumable):
                     closest_distance = distance
 
         if target:
-            target.message(
-                f"A lighting bolt strikes the {target.name} with a loud thunder, for {self.damage} damage!"
-            )
-            target.fighter.take_damage(self.damage)
+            msg = "A lightning bolt strikes"
+            msg2 = "with a loud thunder"
+            target.fighter.take_damage(self.damage,
+                                       msg,
+                                       msg2=msg2,
+                                       ignore_defense=True,
+                                       source_entity=consumer
+                                       )
             self.consume()
         else:
             raise Impossible("No enemy is close enough to strike.")
