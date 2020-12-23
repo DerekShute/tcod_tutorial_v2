@@ -52,7 +52,7 @@ class PickupAction(Action):
                 item.parent = self.entity.inventory
                 inventory.items.append(item)
 
-                self.engine.message_log.add_message(f"You picked up the {item.name}!")
+                self.entity.message(f"You picked up the {item.name}!")
                 return
 
         raise exceptions.Impossible("There is nothing here to pick up.")
@@ -109,9 +109,7 @@ class TakeStairsAction(Action):
         """
         if (self.entity.x, self.entity.y) == self.engine.game_map.downstairs_location:
             self.engine.game_world.generate_floor()
-            self.engine.message_log.add_message(
-                "You descend the staircase.", color.descend
-            )
+            self.entity.message("You descend the staircase.", color.descend)
         else:
             raise exceptions.Impossible("There are no stairs here.")
 
@@ -157,12 +155,12 @@ class MeleeAction(ActionWithDirection):
             attack_color = color.enemy_atk
 
         if damage > 0:
-            self.engine.message_log.add_message(
+            self.entity.message(
                 f"{attack_desc} for {damage} hit points.", attack_color
             )
             target.fighter.hp -= damage
         else:
-            self.engine.message_log.add_message(
+            self.entity.message(
                 f"{attack_desc} but does no damage.", attack_color
             )
 

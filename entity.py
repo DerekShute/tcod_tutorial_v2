@@ -53,6 +53,15 @@ class Entity:
     def gamemap(self) -> GameMap:
         return self.parent.gamemap
 
+    def message(self: T, *args, **kwargs) -> None:
+        '''
+        Hides the crazy of figuring out your way to engine
+        
+        In the future, we can use this to determine if the message should even appear
+        based on field of view
+        '''
+        self.parent.engine.message_log.add_message(*args, **kwargs)
+
     def spawn(self: T, gamemap: GameMap, x: int, y: int) -> T:
         """Spawn a copy of this instance at the given location."""
         clone = copy.deepcopy(self)
