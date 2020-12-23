@@ -79,7 +79,7 @@ class ConfusedEnemy(BaseAI):
     """
 
     def __init__(
-        self, entity: Actor, previous_ai: Optional[BaseAI], turns_remaining: int
+        self, entity: Actor, previous_ai: Optional[BaseAI] = None, turns_remaining: int = 0
     ):
         super().__init__(entity)
 
@@ -88,7 +88,7 @@ class ConfusedEnemy(BaseAI):
 
     def perform(self) -> None:
         # Revert the AI back to the original state if the effect has run its course.
-        if self.turns_remaining <= 0:
+        if self.previous_ai and self.turns_remaining <= 0:
             self.engine.message_log.add_message(
                 f"The {self.entity.name} is no longer confused."
             )
@@ -108,7 +108,8 @@ class ConfusedEnemy(BaseAI):
                 ]
             )
 
-            self.turns_remaining -= 1
+            if self.previous_ai:
+                self.turns_remaining -= 1
 
             # The actor will either try to move or attack in the chosen random direction.
             # Its possible the actor will just bump into the wall, wasting a turn.
