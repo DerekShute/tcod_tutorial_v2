@@ -4,6 +4,7 @@ from typing import Optional, TYPE_CHECKING
 
 import actions
 import color
+import effects
 import components.ai
 import components.inventory
 from components.base_component import BaseComponent
@@ -62,13 +63,7 @@ class ConfusionConsumable(Consumable):
         if target is consumer:
             raise Impossible("You cannot confuse yourself!")
 
-        target.message(
-            f"The eyes of the {target.name} look vacant, as it starts to stumble around!",
-            color.status_effect_applied,
-        )
-        target.ai = components.ai.ConfusedEnemy(
-            entity=target, previous_ai=target.ai, turns_remaining=self.number_of_turns,
-        )
+        effects.confusion(target, self.number_of_turns)
         self.consume()
 
 
@@ -91,16 +86,8 @@ class FireballDamageConsumable(Consumable):
         if not self.engine.game_map.visible[target_xy]:
             raise Impossible("You cannot target an area that you cannot see.")
 
-        targets_hit = False
-        for actor in self.engine.game_map.actors:
-            if actor.distance(*target_xy) <= self.radius:               
-                actor.fighter.take_damage(self.damage,
-                                          "A fiery explosion engulfs",
-                                          ignore_defense=True,
-                                          source_entity=action.entity
-                                          )
-                targets_hit = True
-
+        effect = lambda t : effects.fire(t, self.damage, source_entity=action.entity)
+        targets_hit = effects.radius_aoe(self.engine, target_xy, self.radius, effect)
         if not targets_hit:
             raise Impossible("There are no targets in the radius.")
         self.consume()
@@ -131,26 +118,9 @@ class LightningDamageConsumable(Consumable):
 
     def activate(self, action: actions.ItemAction) -> None:
         consumer = action.entity
-        target = None
-        closest_distance = self.maximum_range + 1.0
-
-        for actor in self.engine.game_map.actors:
-            if actor is not consumer and self.parent.gamemap.visible[actor.x, actor.y]:
-                distance = consumer.distance(actor.x, actor.y)
-
-                if distance < closest_distance:
-                    target = actor
-                    closest_distance = distance
-
-        if target:
-            msg = "A lightning bolt strikes"
-            msg2 = "with a loud thunder"
-            target.fighter.take_damage(self.damage,
-                                       msg,
-                                       msg2=msg2,
-                                       ignore_defense=True,
-                                       source_entity=consumer
-                                       )
-            self.consume()
-        else:
+        effect = lambda t : effects.lightning(t, self.damage, source_entity=consumer)
+        target_hit = effects.nearest_aoe(self.engine, (consumer.x, consumer.y), self.maximum_range, effect, not_actor=consumer)
+        if not target_hit:
             raise Impossible("No enemy is close enough to strike.")
+
+# EOF
