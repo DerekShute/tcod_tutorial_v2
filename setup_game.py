@@ -49,17 +49,14 @@ def new_game() -> Engine:
         "Hello and welcome, adventurer, to yet another dungeon!", color.welcome_text
     )
 
-    dagger = copy.deepcopy(entity_factories.dagger)
-    leather_armor = copy.deepcopy(entity_factories.leather_armor)
+    # Give the player an initial inventory
 
-    dagger.parent = player.inventory
-    leather_armor.parent = player.inventory
-
-    player.inventory.items.append(dagger)
-    player.equipment.toggle_equip(dagger, add_message=False)
-
-    player.inventory.items.append(leather_armor)
-    player.equipment.toggle_equip(leather_armor, add_message=False)
+    for item in (entity_factories.dagger, entity_factories.leather_armor):
+        thing = copy.deepcopy(item)
+        thing.parent = player.inventory
+        player.inventory.items.append(thing)
+        if thing.equippable:
+            player.equipment.toggle_equip(thing, add_message=False)
 
     return engine
 
